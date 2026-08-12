@@ -9,7 +9,7 @@ import {createContext,
 
     const AuthContext = createContext(null);
 
-    export function AuthProvider({children}){
+    export function AuthProvider({children}){//this react component actually provide info to AuthContext 
         const [user,setUser]=useState(null);
         const [loading,setLoading]=useState(true);
         const queryClient=useQueryClient();//get acccess to tht client ,if we wanna logout we need to remove cached detail
