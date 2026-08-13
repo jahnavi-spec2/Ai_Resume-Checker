@@ -4,10 +4,10 @@ function notFound(req,res,next){
     next(ApiError.notFound(`Route ${req.method} ${req.originalUrl} not found`));
 }
 
-const errorHandler=(err,res,req,next)=>{
+const errorHandler=(err,req,res,next)=>{
     if(err instanceof ApiError){
         return res.status(err.statusCode).json({
-            sucess:false,
+            success:false,
             message:err.message,
             details:err.details || null
         });
@@ -18,7 +18,7 @@ const errorHandler=(err,res,req,next)=>{
     console.error("Unhandled error:" , err);
 
     return res.status(500).json({
-        sucess:false,
+        success:false,
         message:"Internal server error"
     })
 };

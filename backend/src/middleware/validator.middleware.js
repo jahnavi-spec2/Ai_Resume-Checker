@@ -1,18 +1,17 @@
-import {validationResult} from "express-validator";
-import {ApiError} from "../utils/ApiError.js"
+import ApiError from "../utils/ApiError.js";
 
-export const validate=(req,res,next)=>{
+export const validate = (schema) => (req, res, next) => {
+    const result = schema.safeParse(req.body);
 
-    const error=validationResult(req);
-
-    if(error.isEmpty())
+    if (result.success) {
+        req.body = result.data;
         return next();
+    }
 
-        const extractedErrors=[];
+    const errors = result.error.issues.map((issue) => ({
+        field: issue.path.join("."),
+        message: issue.message
+    }));
 
-        error.array().forEach((err)=>{
-  extractedErrors.push(err.msg)});
-        
-
-  throw new ApiError(422,"Received data is invalid",extractedErrors)
-}
+    throw ApiError.badRequest("Invalid request data", errors);
+};

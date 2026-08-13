@@ -56,7 +56,7 @@ export const loginUser=asynchandler(async(req,res)=>{
 
 
 const user =await User.findOne({
-    email:email.toLowerCase();
+    email:email.toLowerCase(),
 
 });
 if(!user)
@@ -114,4 +114,4 @@ export const getCurrentUser= asyncHandler(async(req,res)=>{
             "Current user fetched sucessfully"
         )
       )
-})
+});
