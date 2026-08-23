@@ -1,18 +1,18 @@
-import User from "../models/user.modal";
-import asyncHandler from "../utils/asyncHandler";
-import ApiError from "../utils/ApiError";
-import ApiResponse from "../utils/ApiResponse.js";
+import User from "../models/user.model.js";
+import asyncHandler from "../utils/asyncHandler.js";
+import ApiError from "../utils/ApiError.js";
+import {ApiResponse} from "../utils/ApiResponse.js";
 import{signToken,cookieOptions} from "../utils/jwt.js";
 
 
 export const registerUser= asyncHandler(async(req,res)=>{
     const {name,email,password}= req.body;
     if(!name || !email|| !password)
-        throw  ApiError.badRequest("name,email adn password are required");
+        throw  ApiError.badRequest("Required Field");
 
 
     const existingUser=await User.findOne({
-        email:email.toowerCase()
+        email:email.toLowerCase()
     });
 
     if(existingUser){
@@ -21,7 +21,7 @@ export const registerUser= asyncHandler(async(req,res)=>{
 
     const user =await User.create({
        
-        email:email.toLoweerCase(),
+        email:email.toLowerCase(),
         password,
          name
     });
@@ -46,7 +46,7 @@ export const registerUser= asyncHandler(async(req,res)=>{
 });
 
 //POST/API/AUTH/LOGIN
-export const loginUser=asynchandler(async(req,res)=>{
+export const loginUser=asyncHandler(async(req,res)=>{
 
 
     const {email,password}=req.body;
@@ -95,7 +95,7 @@ const loggedInUser=await User.findById(user._id)
 
 export const logoutUser=asyncHandler(async(req,res)=>{
     return res.status(200)
-    .clearCookie("acessToken",cookieOptions)
+    .clearCookie("accessToken",cookieOptions)
     .json(
         new ApiResponse(200,{},"Logged out sucessfully")
     );

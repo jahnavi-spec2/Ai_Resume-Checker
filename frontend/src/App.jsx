@@ -1,23 +1,24 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { RouterProvider } from "react-router-dom";
+import { ThemeProvider } from "@/context/ThemeContext";
+import { AuthProvider } from "@/context/AuthContext";
+import { UIProvider } from "@/context/UIContext";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { router } from "@/routes";
+
+const queryClient = new QueryClient();
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-
-    <QueryClientProvider>
+    <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <UIProvider>
           <AuthProvider>
-            <RouterProvider router={router}/>
+            <RouterProvider router={router} />
           </AuthProvider>
         </UIProvider>
       </ThemeProvider>
     </QueryClientProvider>
-  )}
+  );
+}
 
-export default App
+export default App;

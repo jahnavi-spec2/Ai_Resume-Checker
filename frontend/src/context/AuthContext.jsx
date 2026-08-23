@@ -17,14 +17,14 @@ import {createContext,
 
   const refresh=useCallback(async()=>{
     try{
-   const {user}= await authApi.me()// is user loggedi n if yes thn send details
-setUser(user);
+      const {user}= await authApi.me()// is user loggedi n if yes thn send details
+      setUser(user);
     }
     catch{
-setUser(null);
+      setUser(null);
     }
     finally{
-setLoading(false);
+      setLoading(false);
     }
   },[]);
 
@@ -55,16 +55,16 @@ setLoading(false);
     }
   },[queryClient]);
 
-  const updateProfile= useCallback(async(payload)=>{
-    const {user}= await authApi.updateProfile(payload);
-    setUser(user);
-    return user;
-  },[]);
+  // const updateProfile= useCallback(async(payload)=>{
+  //   const {user}= await authApi.updateProfile(payload);
+  //   setUser(user);
+  //   return user;
+  // },[]);
 
 
   return (
 
-    <AuthContext.Provider value={{user,loading,login,register,logout,refresh,updateProfile}}>
+    <AuthContext.Provider value={{user,loading,login,register,logout,refresh}}>
     {children}
     </AuthContext.Provider>
   );
