@@ -7,13 +7,14 @@ const NOISE_DATA_URI =
 
 export function AuthShell({ children, headline, subhead }) {
   return (
-    <div className="min-h-screen flex bg-[var(--bg)] p-3 sm:p-4 gap-0 lg:gap-4">
+    <div className=" min-h screen flex
+    bg-[var(--bg)] p-3 sm:p-4 gap-0 ">
       {/* Left — form */}
       <div className="flex-1 flex items-center justify-center px-4 sm:px-8 py-10">
         <div className="w-full max-w-[400px]">{children}</div>
       </div>
 
-      {/* Right — brand panel (desktop only) */}
+      {/* Right  */}
       <BrandPanel headline={headline} subhead={subhead} />
     </div>
   );
@@ -21,7 +22,7 @@ export function AuthShell({ children, headline, subhead }) {
 
 function BrandPanel({ headline, subhead }) {
   return (
-    <div className="hidden lg:block flex-1 relative rounded-[28px] overflow-hidden isolate">
+    <div className="hidden lg:block flex-1 relative rounded-[28px] overflow-hidden ">
       {/* Base dark gradient */}
       <div
         className="absolute inset-0"
