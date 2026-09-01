@@ -2,12 +2,12 @@ import {useEffect} from "react";
 
 import {Navbar} from "../components/landing/Navbar.jsx";
 import { HeroSection } from "../components/landing/HeroSection";
-import { FeaturesSection } from "../components/landing/FeaturesSection";
+import { FeaturesSection } from "../components/landing/Featuressection";
 import { HowItWorks } from "../components/landing/HowItWorks";
-import { DashboardPreviewSection } from "../components/landing/DashboardPreviewSection";
-import { BenefitsSection } from "../components/landing/BenefitsSection";
+import { DashboardPreviewSection } from "../components/landing/DashboardpreviewSection";
+import { BenefitsSection } from "../components/landing/Benefitssection";
 import { TestimonialsSection } from "../components/landing/TestimonialsSection";
-import { CTASection } from "../components/landing/CTASection";
+import { CTASection } from "../components/landing/CtsSection";
 import { Footer } from "../components/landing/Footer";
  
 
@@ -31,7 +31,7 @@ return()=>{
     <FeaturesSection/>
  <HowItWorks/>
 <DashboardPreviewSection/>
-<BeefitsSection/>
+<BenefitsSection/>
 <TestimonialsSection />
 <CTASection/>
 
