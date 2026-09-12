@@ -2,6 +2,9 @@ import express from "express";
 import cors  from "cors";
 import authRouter from "./routes/user.router.js";
 import resumeRouter from "./routes/resume.router.js";
+import analysisRouter from "./routes/analysis.router.js";
+import dashboardRouter from "./routes/dashboard.router.js";
+
 import cookieParser from "cookie-parser";
 import { notFound } from "./middleware/errorHandler.js";
 import errorHandler from "./middleware/errorHandler.js";
@@ -18,6 +21,8 @@ app.use(cors({
 
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/resumes", resumeRouter);
+app.use("/api/v1/analyses", analysisRouter);
+app.use("/api/v1/dashboard", dashboardRouter);
 
 app.use(notFound);
 app.use(errorHandler);

@@ -18,9 +18,8 @@ export const analyzeResume = asyncHandler(async (req, res) => {
   if (!resume) {
     throw ApiError.notFound("Resume not found");
   }
-
-  // Find the target version (current active version or initial version)
-  const activeVersion =
+  
+ const activeVersion =
     resume.versions.id(resume.currentVersionId) || resume.versions[0];
 
   if (!activeVersion || !activeVersion.rawText) {
@@ -30,7 +29,7 @@ export const analyzeResume = asyncHandler(async (req, res) => {
   // Evaluate text with Gemini AI
   const aiResult = await analyzeResumeText(activeVersion.rawText, targetRole || "");
 
-  // Create and save analysis record
+
   const analysis = await Analysis.create({
     user: req.user._id,
     resume: resume._id,
@@ -45,5 +44,58 @@ export const analyzeResume = asyncHandler(async (req, res) => {
 
   return res.status(201).json(
     new ApiResponse(201, { analysis }, "Resume analyzed successfully")
+  );
+});
+
+export const getUserAnalyses = asyncHandler(async (req, res) => {
+  const analyses = await Analysis.find({ user: req.user._id })
+    .populate("resume", "title")
+    .sort({ createdAt: -1 });
+
+  return res.status(200).json(
+    new ApiResponse(200, { analyses }, "User analyses retrieved successfully")
+  );
+});
+
+// GET /api/v1/analyses/:id
+export const getAnalysisById = asyncHandler(async (req, res) => {
+  const analysis = await Analysis.findOne({
+    _id: req.params.id,
+    user: req.user._id,
+  }).populate("resume", "title");
+
+  if (!analysis) {
+    throw ApiError.notFound("Analysis record not found");
+  }
+
+  return res.status(200).json(
+    new ApiResponse(200, { analysis }, "Analysis record retrieved successfully")
+  );
+});
+
+export const getResumeAnalyses = asyncHandler(async (req, res) => {
+  const analyses = await Analysis.find({
+    resume: req.params.resumeId,
+    user: req.user._id,
+  }).sort({ createdAt: -1 });
+
+  return res.status(200).json(
+    new ApiResponse(200, { analyses }, "Resume analysis history retrieved successfully")
+  );
+});
+
+// DELETE /api/v1/analyses/:id
+export const deleteAnalysis = asyncHandler(async (req, res) => {
+  const analysis = await Analysis.findOneAndDelete({
+    _id: req.params.id,
+    user: req.user._id,
+  });
+
+  if (!analysis) {
+    throw ApiError.notFound("Analysis record not found");
+  }
+
+  return res.status(200).json(
+    new ApiResponse(200, null, "Analysis record deleted successfully")
   );
 });
