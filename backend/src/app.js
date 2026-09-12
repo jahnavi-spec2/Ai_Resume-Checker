@@ -1,6 +1,7 @@
 import express from "express";
 import cors  from "cors";
 import authRouter from "./routes/user.router.js";
+import resumeRouter from "./routes/resume.router.js";
 import cookieParser from "cookie-parser";
 import { notFound } from "./middleware/errorHandler.js";
 import errorHandler from "./middleware/errorHandler.js";
@@ -15,7 +16,8 @@ app.use(cors({
     credentials:true
 }));
 
-app.use("/api1/auth", authRouter);
+app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/resumes", resumeRouter);
 
 app.use(notFound);
 app.use(errorHandler);

@@ -66,7 +66,7 @@ if(!user)
 const isPasswordValid= await user.isPasswordCorrect(password);
 
 if(!isPasswordValid)
-throw ApiError.unauthorised("Password is incorrect");
+throw ApiError.unauthorized("Password is incorrect");
  
 // the old token may:
 

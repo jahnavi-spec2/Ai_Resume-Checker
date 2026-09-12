@@ -13,7 +13,7 @@ import {
   AuthField,
   AuthPrimaryButton,
   AuthErrorBanner,
-} from "../components/auth/AuthhShell";
+} from "../components/auth/AuthShell";
 
 import AILogo from "../components/layout/AILogo";
 import { useAuth } from "../context/AuthContext";

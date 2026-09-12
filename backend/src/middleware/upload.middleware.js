@@ -3,11 +3,9 @@ import ApiError from "../utils/ApiError.js";
 
 const storage=multer.memoryStorage();
 
-function fileFulter(req,file,cb){
+function fileFilter(req,file,cb){
     if(file.mimetype!=="application/pdf"){
-        return cb(ApiError.badrequest("Only PDF files are allowed"))
-    ;
-
+        return cb(ApiError.badRequest("Only PDF files are allowed"));
     }
     cb(null,true);
 }
