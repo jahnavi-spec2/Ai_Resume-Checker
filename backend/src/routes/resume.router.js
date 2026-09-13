@@ -9,6 +9,7 @@ import {
   addResumeVersion,
   setCurrentVersion,
   getResumeVersions,
+  exportResumeText,
 } from "../controllers/resume.controller.js";
 import { analyzeResume } from "../controllers/analysis.controller.js";
 
@@ -19,6 +20,7 @@ router.use(verifyJWT);
 
 router.post("/upload", uploadMiddleware, uploadResume);
 router.get("/", getUserResumes);
+router.get("/:id/export", exportResumeText);
 router.get("/:id", getResumeById);
 router.delete("/:id", deleteResume);
 router.post("/:id/analyze", analyzeResume);

@@ -176,3 +176,31 @@ export const getResumeVersions = asyncHandler(async (req, res) => {
   );
 });
 
+// GET /api/v1/resumes/:id/export
+export const exportResumeText = asyncHandler(async (req, res) => {
+  const { versionId } = req.query;
+  const resume = await Resume.findOne({
+    _id: req.params.id,
+    user: req.user._id,
+  });
+
+  if (!resume) {
+    throw ApiError.notFound("Resume not found");
+  }
+
+  const version = versionId
+    ? resume.versions.id(versionId)
+    : resume.versions.id(resume.currentVersionId) || resume.versions[0];
+
+  if (!version) {
+    throw ApiError.notFound("Requested resume version not found");
+  }
+
+  const sanitizedTitle = resume.title.replace(/[^a-zA-Z0-9_-]/g, "_");
+  const filename = `${sanitizedTitle}_${version.label.replace(/\s+/g, "_")}.txt`;
+
+  res.setHeader("Content-Type", "text/plain");
+  res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+  return res.status(200).send(version.rawText);
+});
+

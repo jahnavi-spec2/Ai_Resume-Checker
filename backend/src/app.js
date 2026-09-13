@@ -4,6 +4,7 @@ import authRouter from "./routes/user.router.js";
 import resumeRouter from "./routes/resume.router.js";
 import analysisRouter from "./routes/analysis.router.js";
 import dashboardRouter from "./routes/dashboard.router.js";
+import jobMatchRouter from "./routes/jobMatch.router.js";
 
 import cookieParser from "cookie-parser";
 import { notFound } from "./middleware/errorHandler.js";
@@ -23,6 +24,7 @@ app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/resumes", resumeRouter);
 app.use("/api/v1/analyses", analysisRouter);
 app.use("/api/v1/dashboard", dashboardRouter);
+app.use("/api/v1/job-matching", jobMatchRouter);
 
 app.use(notFound);
 app.use(errorHandler);

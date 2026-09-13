@@ -5,6 +5,7 @@ import {
   getAnalysisById,
   getResumeAnalyses,
   deleteAnalysis,
+  exportAnalysisReport,
 } from "../controllers/analysis.controller.js";
 
 const router = express.Router();
@@ -17,6 +18,9 @@ router.get("/", getUserAnalyses);
 
 // GET /api/v1/analyses/resume/:resumeId - Get analysis history for a specific resume
 router.get("/resume/:resumeId", getResumeAnalyses);
+
+// GET /api/v1/analyses/:id/export - Download analysis report
+router.get("/:id/export", exportAnalysisReport);
 
 // GET /api/v1/analyses/:id - Get single analysis details
 router.get("/:id", getAnalysisById);

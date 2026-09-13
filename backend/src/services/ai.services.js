@@ -61,4 +61,53 @@ ${resumeText}
     console.error("Gemini API Error:", error);
     throw ApiError.internal("AI analysis service encountered an error. Please check your API key or retry.");
   }
-}
+}
+
+export const matchResumeWithJob =async(resumeText,jobTitle,jobDescription)=>{
+  const prompt=`You are an expert ATS (Applicant Tracking System) and Senior Technical Recruiter.
+Compare the following candidate RESUME TEXT against the target JOB DESCRIPTION.
+
+JOB TITLE:${jobTitle || "Not Specified"}
+JOB DESCRIPTION:${jobDescription}
+
+CANDIDATE RESUME TEXT:${resumeText}
+
+Analyze how well the candidate matches this specific job description. Return ONLY a valid JSON object (no markdown, no backticks, no code blocks) with the following format:
+{
+  "matchScore": <number between 0 and 100 representing overall percentage fit>,
+  "matchingSkills": [<array of key skills found in BOTH resume and job description>],
+  "missingSkills": [<array of required or preferred skills mentioned in job description but missing in resume>],
+  "missingKeywords": [<array of important domain keywords/phrases from job description missing in resume>],
+  "experienceGaps": [<array of experience level, qualification, or domain gaps between resume and job description>],
+  "suggestions": [<array of specific, actionable tips to tailor this resume for this job>]
+}
+
+`;
+
+try{
+const response=await ai.models.generateContent({
+  model:"gemini-2.5-flash",
+  contents:prompt
+});
+
+const text =response.text.trim();
+
+const jsonString=text.replace(/```json/g, "").replace(/```/g,"").trim();
+const result=JSON.parse(jsonString);
+
+return {
+  matchScore:Number(result.matchScore) || 0,
+  matchingSkills:
+  Array.isArray(result.matchingSkills)?
+result.matchingSkills : [],
+      missingSkills: Array.isArray(result.missingSkills) ? result.missingSkills : [],
+      missingKeywords: Array.isArray(result.missingKeywords) ? result.missingKeywords : [],
+      experienceGaps: Array.isArray(result.experienceGaps) ? result.experienceGaps : [],
+      suggestions: Array.isArray(result.suggestions) ? result.suggestions : [],
+    };
+  } catch (error) {
+    console.error("Gemini AI Job Matching Error:", error);
+    throw new Error("Failed to process job matching analysis with AI");
+  }
+};
+
