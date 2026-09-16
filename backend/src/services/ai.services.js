@@ -1,12 +1,18 @@
 import { GoogleGenAI } from "@google/genai";
 import ApiError from "../utils/ApiError.js";
 
-export async function analyzeResumeText(resumeText, targetRole = "") {
-  if (!process.env.GEMINI_API_KEY) {
+function getAiClient() {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
     throw ApiError.internal("GEMINI_API_KEY is not configured in backend environment variables");
   }
+  return new GoogleGenAI({ apiKey });
+}
 
-  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+const DEFAULT_MODEL = process.env.GEMINI_MODEL || "gemini-3.6-flash";
+
+export async function analyzeResumeText(resumeText, targetRole = "") {
+  const ai = getAiClient();
 
   const prompt = `
 You are an expert ATS (Applicant Tracking System) resume analyzer. ${
@@ -35,7 +41,7 @@ ${resumeText}
 
   try {
     const response = await ai.models.generateContent({
-      model: process.env.GEMINI_MODEL || "gemini-2.5-flash",
+      model: DEFAULT_MODEL,
       contents: prompt,
     });
 
@@ -63,8 +69,10 @@ ${resumeText}
   }
 }
 
-export const matchResumeWithJob =async(resumeText,jobTitle,jobDescription)=>{
-  const prompt=`You are an expert ATS (Applicant Tracking System) and Senior Technical Recruiter.
+export const matchResumeWithJob = async (resumeText, jobTitle, jobDescription) => {
+  const ai = getAiClient();
+
+  const prompt = `You are an expert ATS (Applicant Tracking System) and Senior Technical Recruiter.
 Compare the following candidate RESUME TEXT against the target JOB DESCRIPTION.
 
 JOB TITLE:${jobTitle || "Not Specified"}
@@ -81,25 +89,22 @@ Analyze how well the candidate matches this specific job description. Return ONL
   "experienceGaps": [<array of experience level, qualification, or domain gaps between resume and job description>],
   "suggestions": [<array of specific, actionable tips to tailor this resume for this job>]
 }
-
 `;
 
-try{
-const response=await ai.models.generateContent({
-  model:"gemini-2.5-flash",
-  contents:prompt
-});
+  try {
+    const response = await ai.models.generateContent({
+      model: DEFAULT_MODEL,
+      contents: prompt,
+    });
 
-const text =response.text.trim();
+    const text = (response.text || "").trim();
 
-const jsonString=text.replace(/```json/g, "").replace(/```/g,"").trim();
-const result=JSON.parse(jsonString);
+    const jsonString = text.replace(/```json/gi, "").replace(/```/g, "").trim();
+    const result = JSON.parse(jsonString);
 
-return {
-  matchScore:Number(result.matchScore) || 0,
-  matchingSkills:
-  Array.isArray(result.matchingSkills)?
-result.matchingSkills : [],
+    return {
+      matchScore: Number(result.matchScore) || 0,
+      matchingSkills: Array.isArray(result.matchingSkills) ? result.matchingSkills : [],
       missingSkills: Array.isArray(result.missingSkills) ? result.missingSkills : [],
       missingKeywords: Array.isArray(result.missingKeywords) ? result.missingKeywords : [],
       experienceGaps: Array.isArray(result.experienceGaps) ? result.experienceGaps : [],

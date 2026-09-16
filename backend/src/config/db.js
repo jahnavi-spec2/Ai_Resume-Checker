@@ -1,10 +1,14 @@
 import mongoose from "mongoose";
-import {config} from "./env.js";
+import dns from "dns";
+import { config } from "./env.js";
 
-const connectDB= async() =>{
-    try{
-       const conn=await mongoose.connect(config.mongoUri);
-       console.log(`✅ MONGODB Connected :{conn.connection.host}`);
+// Ensure Google DNS is used for SRV resolution on Windows
+dns.setServers(["8.8.8.8", "8.8.4.4"]);
+
+const connectDB = async () => {
+    try {
+       const conn = await mongoose.connect(config.mongoUri);
+       console.log(`✅ MONGODB Connected: ${conn.connection.host}`);
 
     } catch(error){ 
     console.log(`❌ MongoDB connected failed: ${error.message}`);

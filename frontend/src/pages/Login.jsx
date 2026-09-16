@@ -1,160 +1,137 @@
-import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "@/context/AuthContext";
 import {
-  ArrowRight,
-  Loader2,
+  Sparkles,
   Mail,
   Lock,
+  ArrowRight,
+  AlertTriangle,
 } from "lucide-react";
-
-import {
-  AuthShell,
-  AuthField,
-  AuthPrimaryButton,
-  AuthErrorBanner,
-} from "../components/auth/AuthShell";
-
-import AILogo from "../components/layout/AILogo";
-import { useAuth } from "../context/AuthContext";
 
 export default function Login() {
   const { login } = useAuth();
-  const nav = useNavigate();
+  const navigate = useNavigate();
 
-  const [form, setForm] = useState({
-    email: "",
-    password: "",
-  });
-
-  const [err, setErr] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
-  async function onSubmit(e) {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    setErr("");
-    setLoading(true);
+    if (!email.trim() || !password) {
+      setErrorMsg("Please enter your email and password.");
+      return;
+    }
 
     try {
-      await login(form);
-      nav("/dashboard");
+      setLoading(true);
+      setErrorMsg("");
+      await login({ email: email.trim(), password });
+      navigate("/dashboard");
     } catch (err) {
-      setErr(err.message || "Login failed");
+      console.error("Login error:", err);
+      setErrorMsg(
+        err.response?.data?.message || err.message || "Invalid credentials. Please check your email and password."
+      );
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   return (
-    
-    <AuthShell
-
-
-    
-      headline={
-        <>
-          Sharpen your resume,
-          <br />
-          <em style={{ fontStyle: "italic" }}>
-            with intelligence.
-          </em>
-        </>
-      }
-      subhead="Score against ATS, fix weak bullets, and ship a stronger version of yourself in minutes."
-    >
-      <motion.div
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{
-          duration: 0.55,
-          ease: [0.16, 1, 0.3, 1],
-        }}
-      >
-        <div className="mb-12">
-          <AILogo size={48} />
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center p-6 selection:bg-emerald-500 selection:text-slate-950">
+      <div className="w-full max-w-md space-y-6">
+        {/* Logo / Brand Header */}
+        <div className="text-center space-y-2">
+          <Link to="/" className="inline-flex items-center gap-2.5">
+            <div className="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl text-emerald-400 shadow-lg shadow-emerald-500/10">
+              <Sparkles className="w-6 h-6" />
+            </div>
+            <span className="font-extrabold text-2xl text-white tracking-tight">
+              Resume<span className="text-emerald-400">AI</span>
+            </span>
+          </Link>
+          <h1 className="text-xl font-bold text-white tracking-tight pt-2">
+            Welcome Back
+          </h1>
+          <p className="text-xs text-slate-400">
+            Sign in to access your resumes, ATS reports, and job matches
+          </p>
         </div>
 
-        <h1 className="font-display text-[34px] font-semibold tracking-tight text-[var(--ink)] leading-[1.05]">
-          Welcome back
-        </h1>
-
-        <p className="text-[var(--ink-muted)] mt-2 text-[15px]">
-          Sign in to keep sharpening your resume.
-        </p>
-
-        <form onSubmit={onSubmit} className="mt-9 space-y-4">
-
-          
-          <AuthField
-            label="Email"
-            type="email"
-            autoComplete="email"
-            value={form.email}
-            onChange={(v) =>
-              setForm({ ...form, email: v })
-            }
-            placeholder="you@example.com"
-            icon={Mail}
-          />
-
-          <AuthField
-            label="Password"
-            type="password"
-            autoComplete="current-password"
-            value={form.password}
-            onChange={(v) =>
-              setForm({ ...form, password: v })
-            }
-            placeholder="********"
-            icon={Lock}
-            extra={
-              <button
-                type="button"
-                className="text-xs text-[var(--accent-strong)] font-semibold hover:underline"
-              >
-                Forgot?
-              </button>
-            }
-          />
-
-          <AuthErrorBanner>
-            {err}
-          </AuthErrorBanner>
-
-          <div className="pt-1">
-            <AuthPrimaryButton
-              type="submit"
-              disabled={loading}
-            >
-              {loading ? (
-                <>
-                  <Loader2
-                    size={15}
-                    className="animate-spin"
-                  />
-                  Signing in...
-                </>
-              ) : (
-                <>
-                  Sign in
-                  <ArrowRight size={15} />
-                </>
-              )}
-            </AuthPrimaryButton>
+        {/* Error Notification */}
+        {errorMsg && (
+          <div className="p-4 bg-rose-500/10 border border-rose-500/30 rounded-xl text-xs text-rose-300 flex items-center gap-2">
+            <AlertTriangle className="w-4 h-4 shrink-0 text-rose-400" />
+            <span>{errorMsg}</span>
           </div>
+        )}
+
+        {/* Form Card */}
+        <form
+          onSubmit={handleSubmit}
+          className="bg-slate-900/80 border border-slate-800 p-7 rounded-2xl space-y-4 shadow-2xl backdrop-blur-md"
+        >
+          {/* Email Input */}
+          <div className="space-y-1.5">
+            <label className="text-xs font-semibold text-slate-300">Email Address</label>
+            <div className="relative">
+              <Mail className="w-4 h-4 text-slate-500 absolute left-3.5 top-3" />
+              <input
+                type="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full pl-10 pr-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-emerald-500 transition-colors"
+              />
+            </div>
+          </div>
+
+          {/* Password Input */}
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-semibold text-slate-300">Password</label>
+            </div>
+            <div className="relative">
+              <Lock className="w-4 h-4 text-slate-500 absolute left-3.5 top-3" />
+              <input
+                type="password"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full pl-10 pr-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-emerald-500 transition-colors"
+              />
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full py-3 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white font-bold text-xs rounded-xl shadow-lg shadow-emerald-600/20 transition-all flex items-center justify-center gap-2 cursor-pointer mt-2"
+          >
+            {loading ? (
+              <>
+                <Sparkles className="w-4 h-4 animate-spin text-emerald-300" />
+                Signing In...
+              </>
+            ) : (
+              <>
+                Sign In <ArrowRight className="w-4 h-4" />
+              </>
+            )}
+          </button>
         </form>
 
-        <div className="text-sm text-[var(--ink-muted)] text-center mt-8">
+        {/* Footer Link */}
+        <div className="text-center text-xs text-slate-400">
           Don't have an account?{" "}
-          <Link
-            to="/register"
-            className="text-[var(--accent-strong)] font-semibold hover:underline"
-          >
-            Create one
+          <Link to="/register" className="text-emerald-400 font-semibold hover:underline">
+            Create Free Account
           </Link>
         </div>
-      </motion.div>
-    </AuthShell>
+      </div>
+    </div>
   );
 }

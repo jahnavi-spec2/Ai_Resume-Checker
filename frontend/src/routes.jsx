@@ -10,6 +10,7 @@ import Insights from "@/pages/Insights";
 import Versions from "@/pages/Versions";
 import History from "@/pages/History";
 import Settings from "@/pages/Settings";
+import JobMatch from "@/pages/JobMatch";
 import { AppLayout } from "@/components/layout/AppShell";
 
 export const router = createBrowserRouter([
@@ -18,14 +19,13 @@ export const router = createBrowserRouter([
   { path: "/register", element: <Register /> },
 
   // everything below shares the sidebar/topbar shell.
-  // NOTE: AppLayout no longer takes a `user` prop — it should call
-  // useAuth() internally to get the logged-in user (see fix below).
   {
     element: <AppLayout />,
     children: [
       { path: "/dashboard", element: <Dashboard /> },
       { path: "/resumes", element: <Resumes /> },
       { path: "/resumes/:id", element: <ResumeDetail /> },
+      { path: "/job-match", element: <JobMatch /> },
       { path: "/insights", element: <Insights /> },
       { path: "/versions", element: <Versions /> },
       { path: "/history", element: <History /> },

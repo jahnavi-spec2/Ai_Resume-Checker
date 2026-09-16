@@ -2,23 +2,22 @@ import {createContext,
     useContext,
     useEffect,
     useState,
-    useCallback} from "react";
+    useCallback
+} from "react";
 
-    import {useQueryClient} from "@tanstack/react-query";
-    import {authApi} from "@api/auth";
+  import { loginApi, registerApi, getCurrentUserApi, logoutApi } from "../api/auth";
 
     const AuthContext = createContext(null);
 
-    export function AuthProvider({children}){//this react component actually provide info to AuthContext 
+    export const AuthProvider=({children})=>{//this react component actually provide info to AuthContext 
         const [user,setUser]=useState(null);
         const [loading,setLoading]=useState(true);
-        const queryClient=useQueryClient();//get acccess to tht client ,if we wanna logout we need to remove cached detail
     
-
+//check if user os loggesd in on page refresh
   const refresh=useCallback(async()=>{
     try{
-      const {user}= await authApi.me()// is user loggedi n if yes thn send details
-      setUser(user);
+      const response=await getCurrentUserApi();
+      setUser(response.data.user);
     }
     catch{
       setUser(null);
@@ -33,33 +32,27 @@ import {createContext,
   },[refresh]);
 
   const login=useCallback(async(credentials)=>{
-    const{user}=await authApi.login(credentials);
-    setUser(user);
-    return user;
-  },[])
+  const response= await loginApi(credentials);
+  const loggedInUser= response.data.user;
+  setUser(loggedInUser);
+  return loggedInUser;
+  },[]);
 
   const register=useCallback(async (payload)=>{
-    const {user}=await authApi.register(payload);
-    setUser(user);
-    return user;
-  })
+   const response=await registerApi(payload);
+   const user=response.data.user;
+   setUser(user);
+   return user;
+  },[])
 
   const logout=useCallback(async()=>{
     try{
-        await authApi.logout();
+        await logoutApi();
 
     }finally{
         setUser(null);
-        queryClient.clear();
-
     }
-  },[queryClient]);
-
-  // const updateProfile= useCallback(async(payload)=>{
-  //   const {user}= await authApi.updateProfile(payload);
-  //   setUser(user);
-  //   return user;
-  // },[]);
+  },[]);
 
 
   return (
